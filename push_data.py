@@ -4,7 +4,7 @@ from pymongo.server_api import ServerApi
 from dotenv import load_dotenv
 import os
 
-load_dotenv()  # Load environment variabl "mongodb+srv://ksiddartha16_db_user:Siddu16@cluster0.lbxcr7m.mongodb.net/?appName=Cluster0"es from .env file
+load_dotenv()  
 
 uri = os.getenv("MONGO_DB_URL")
 
