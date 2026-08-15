@@ -3,7 +3,7 @@ from networksecurity.entity.config_entity import DataValidationConfig
 from networksecurity.exception.exception import NetworkSecurityException
 from networksecurity.constants.training_pipeline import SCHEMA_FILE_PATH
 from networksecurity.logging.logger import logging
-from scipy.stats import ks_2samp    # to get drift report
+from scipy.stats import ks_2samp
 import pandas as pd
 import os
 import sys
@@ -21,12 +21,13 @@ class DataValidation:
         try:
             self.data_ingestion_artifact = data_ingestion_artifact
             self.data_validation_config = data_validation_config
+
             self._schema_config = read_yaml_file(SCHEMA_FILE_PATH)
 
         except Exception as e:
             raise NetworkSecurityException(e, sys)
 
-    @staticmethod   # since we use this only one time here
+    @staticmethod
     def read_data(file_path) -> pd.DataFrame:
         try:
             return pd.read_csv(file_path)
@@ -34,22 +35,32 @@ class DataValidation:
         except Exception as e:
             raise NetworkSecurityException(e, sys)
 
-    def validate_number_of_columns(self, dataframe: pd.DataFrame) -> bool:
+    def validate_number_of_columns(self, dataframe: pd.DataFrame) -> bool: 
         try:
-            number_of_columns = len(self._schema_config["columns"])
+
+            required_columns = [
+                list(column.keys())[0]
+                for column in self._schema_config["columns"] ]
+                
+
 
             logging.info(
-                f"Required number of columns : {number_of_columns}"
+                f"Required number of columns : {len(required_columns)}"
             )
 
             logging.info(
                 f"Data frame has {len(dataframe.columns)} columns."
             )
 
-            if len(dataframe.columns) == number_of_columns:
-                return True
+            # Check number of columns
+            if len(dataframe.columns) != len(required_columns):
+                return False
 
-            return False
+            # Check actual column names
+            if set(dataframe.columns) != set(required_columns):
+                return False
+
+            return True
 
         except Exception as e:
             raise NetworkSecurityException(e, sys)
@@ -62,6 +73,7 @@ class DataValidation:
     ) -> bool:
 
         try:
+
             status = True
             report = {}
 
@@ -73,9 +85,11 @@ class DataValidation:
                 is_sample_dist = ks_2samp(d1, d2)
 
                 if threshold <= is_sample_dist.pvalue:
+
                     is_found = False
 
                 else:
+
                     is_found = True
                     status = False
 
@@ -92,7 +106,11 @@ class DataValidation:
 
             # Create directory
             dir_path = os.path.dirname(drift_report_file_path)
-            os.makedirs(dir_path, exist_ok=True)
+
+            os.makedirs(
+                dir_path,
+                exist_ok=True
+            )
 
             # Write drift report
             write_yaml_file(
@@ -111,6 +129,7 @@ class DataValidation:
 
             error_message = ""
 
+            # Get train and test file paths
             train_file_path = (
                 self.data_ingestion_artifact.trained_file_path
             )
@@ -128,23 +147,28 @@ class DataValidation:
                 test_file_path
             )
 
-            # Validate number of columns
+            # Validate train dataframe
             train_status = self.validate_number_of_columns(
                 dataframe=train_dataframe
             )
 
             if not train_status:
+
                 error_message += (
-                    "Train data frame does not contain all columns.\n"
+                    "Train data frame does not contain "
+                    "the required columns.\n"
                 )
 
+            # Validate test dataframe
             test_status = self.validate_number_of_columns(
                 dataframe=test_dataframe
             )
 
             if not test_status:
+
                 error_message += (
-                    "Test data frame does not contain all columns.\n"
+                    "Test data frame does not contain "
+                    "the required columns.\n"
                 )
 
             # Check data drift
@@ -154,25 +178,62 @@ class DataValidation:
             )
 
             if not drift_status:
+
                 error_message += (
-                    "Data drift detected between train and test datasets.\n"
+                    "Data drift detected between "
+                    "train and test datasets.\n"
                 )
 
             # Overall validation status
-            status = train_status and test_status and drift_status
+            status = (
+                train_status
+                and test_status
+                and drift_status
+            )
 
-            # Create directories
+            logging.info(
+                f"Train validation status: {train_status}"
+            )
+
+            logging.info(
+                f"Test validation status: {test_status}"
+            )
+
+            logging.info(
+                f"Data drift status: {drift_status}"
+            )
+
+            logging.info(
+                f"Overall validation status: {status}"
+            )
+
+            if error_message:
+
+                logging.warning(
+                    f"Data validation issues:\n{error_message}"
+                )
+
+            # Create valid directory
             dir_path_valid = os.path.dirname(
                 self.data_validation_config.valid_train_file_path
             )
 
+            # Create invalid directory
             dir_path_invalid = os.path.dirname(
                 self.data_validation_config.invalid_train_file_path
             )
 
-            os.makedirs(dir_path_valid, exist_ok=True)
-            os.makedirs(dir_path_invalid, exist_ok=True)
+            os.makedirs(
+                dir_path_valid,
+                exist_ok=True
+            )
 
+            os.makedirs(
+                dir_path_invalid,
+                exist_ok=True
+            )
+
+            # Save data according to validation status
             if status:
 
                 # Save to valid paths
@@ -184,6 +245,10 @@ class DataValidation:
                 test_dataframe.to_csv(
                     self.data_validation_config.valid_test_file_path,
                     index=False
+                )
+
+                logging.info(
+                    "Train and test data saved to valid paths."
                 )
 
             else:
@@ -199,16 +264,38 @@ class DataValidation:
                     index=False
                 )
 
+                logging.warning(
+                    "Train and test data saved to invalid paths."
+                )
+
+            # Prepare artifact
             data_validation_artifact = DataValidationArtifact(
+
                 validation_status=status,
-                valid_train_file_path=self.data_validation_config.valid_train_file_path,
-                valid_test_file_path=self.data_validation_config.valid_test_file_path,
-                invalid_train_file_path=self.data_validation_config.invalid_train_file_path,
-                invalid_test_file_path=self.data_validation_config.invalid_test_file_path,
-                drift_report_file_path=self.data_validation_config.drift_report_file_path,
+
+                valid_train_file_path=(
+                    self.data_validation_config.valid_train_file_path
+                ),
+
+                valid_test_file_path=(
+                    self.data_validation_config.valid_test_file_path
+                ),
+
+                invalid_train_file_path=(
+                    self.data_validation_config.invalid_train_file_path
+                ),
+
+                invalid_test_file_path=(
+                    self.data_validation_config.invalid_test_file_path
+                ),
+
+                drift_report_file_path=(
+                    self.data_validation_config.drift_report_file_path
+                ),
             )
 
             return data_validation_artifact
 
         except Exception as e:
+
             raise NetworkSecurityException(e, sys)
