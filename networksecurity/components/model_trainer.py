@@ -24,9 +24,18 @@ from sklearn.ensemble import (
 
 import mlflow
 from urllib.parse import urlparse
-mlflow.set_tracking_uri("http://127.0.0.1:5000")
+
+import dagshub
+
+dagshub.init(
+    repo_owner='ksiddartha16',
+    repo_name='network-security-ML',
+    mlflow=True
+)
+
 
 class ModelTrainer:
+
     def __init__(
         self,
         model_trainer_config: ModelTrainerConfig,
@@ -35,6 +44,7 @@ class ModelTrainer:
         try:
             self.model_trainer_config = model_trainer_config
             self.data_transformation_artifact = data_transformation_artifact
+
         except Exception as e:
             raise NetworkSecurityException(e, sys)
 
@@ -58,22 +68,21 @@ class ModelTrainer:
                 mlflow.get_tracking_uri()
             ).scheme
 
-        # Model registry does not work with file store
+            # Model registry does not work with file store
             if tracking_url_type_store != "file":
 
-                 mlflow.sklearn.log_model(
-                 best_model,
-                 "model",
-                 registered_model_name="NetworkSecurityModel"
+                mlflow.sklearn.log_model(
+                    best_model,
+                    name="model",
+                    registered_model_name="NetworkSecurityModel"
                 )
 
             else:
 
                 mlflow.sklearn.log_model(
                     best_model,
-                    "model"
+                    name="model"
                 )
-                
 
     def train_model(self, X_train, y_train, x_test, y_test):
 
@@ -181,6 +190,8 @@ class ModelTrainer:
             self.model_trainer_config.trained_model_file_path,
             obj=Network_Model
         )
+
+        save_object("final_model/model.pkl",best_model)
 
         ## Model Trainer Artifact
         model_trainer_artifact = ModelTrainerArtifact(

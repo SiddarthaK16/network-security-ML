@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Training | Network Security ML</title>
+
+    <style>
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+
+            font-family:
+                Inter,
+                system-ui,
+                -apple-system,
+                BlinkMacSystemFont,
+                "Segoe UI",
+                sans-serif;
+
+            min-height: 100vh;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            background:
+                radial-gradient(
+                    circle at top,
+                    #172554,
+                    #020617 55%
+                );
+
+            color: white;
+
+            transition: 0.3s;
+        }
+
+
+        .container {
+
+            width: min(650px, 90%);
+
+            padding: 50px;
+
+            text-align: center;
+
+            border-radius: 24px;
+
+            background: rgba(15, 23, 42, 0.85);
+
+            border: 1px solid rgba(148, 163, 184, 0.2);
+
+            box-shadow:
+                0 25px 80px rgba(0, 0, 0, 0.45);
+
+            backdrop-filter: blur(15px);
+        }
+
+
+        .icon {
+
+            width: 80px;
+            height: 80px;
+
+            margin: 0 auto 25px;
+
+            border-radius: 50%;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            font-size: 36px;
+
+            background: rgba(59, 130, 246, 0.15);
+
+            border: 1px solid rgba(59, 130, 246, 0.3);
+        }
+
+
+        h1 {
+
+            font-size: 32px;
+
+            margin-bottom: 12px;
+        }
+
+
+        p {
+
+            color: #94a3b8;
+
+            font-size: 16px;
+
+            line-height: 1.6;
+
+            margin-bottom: 30px;
+        }
+
+
+        .loader {
+
+            width: 55px;
+            height: 55px;
+
+            margin: 0 auto 25px;
+
+            border-radius: 50%;
+
+            border: 5px solid rgba(255,255,255,0.1);
+
+            border-top-color: #3b82f6;
+
+            animation: spin 1s linear infinite;
+        }
+
+
+        @keyframes spin {
+
+            to {
+                transform: rotate(360deg);
+            }
+
+        }
+
+
+        .progress {
+
+            width: 100%;
+            height: 8px;
+
+            border-radius: 20px;
+
+            overflow: hidden;
+
+            background: #1e293b;
+
+            margin-bottom: 25px;
+        }
+
+
+        .progress-bar {
+
+            height: 100%;
+
+            width: 45%;
+
+            border-radius: 20px;
+
+            background:
+                linear-gradient(
+                    90deg,
+                    #2563eb,
+                    #06b6d4
+                );
+
+            animation: progress 2s infinite ease-in-out;
+        }
+
+
+        @keyframes progress {
+
+            0% {
+                transform: translateX(-100%);
+            }
+
+            100% {
+                transform: translateX(250%);
+            }
+
+        }
+
+
+        .status {
+
+            display: inline-block;
+
+            padding: 8px 16px;
+
+            border-radius: 999px;
+
+            background: rgba(34,197,94,0.1);
+
+            color: #4ade80;
+
+            font-size: 14px;
+
+            font-weight: 600;
+        }
+
+
+        .success {
+
+            color: #4ade80;
+        }
+
+
+        .error {
+
+            color: #f87171;
+        }
+
+
+        button {
+
+            margin-top: 25px;
+
+            padding: 12px 24px;
+
+            border: none;
+
+            border-radius: 12px;
+
+            background: #2563eb;
+
+            color: white;
+
+            font-size: 15px;
+
+            font-weight: 600;
+
+            cursor: pointer;
+        }
+
+
+        button:hover {
+
+            background: #1d4ed8;
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+<div class="container">
+
+    <div class="icon" id="icon">
+        🧠
+    </div>
+
+    <div id="loader" class="loader"></div>
+
+    <h1 id="title">
+        Training Your Model
+    </h1>
+
+    <p id="message">
+        Your Network Security ML pipeline is running.
+        This may take a little while while the models are trained and evaluated.
+    </p>
+
+    <div class="progress" id="progress">
+        <div class="progress-bar"></div>
+    </div>
+
+    <span class="status" id="status">
+        TRAINING
+    </span>
+
+    <div id="action"></div>
+
+</div>
+
+
+<script>
+
+async function checkStatus() {
+
+    try {
+
+        const response =
+            await fetch("/training-status");
+
+        const data =
+            await response.json();
+
+
+        if (data.status === "running" ||
+            data.status === "starting") {
+
+            document.getElementById("title").innerText =
+                "Training Your Model";
+
+            document.getElementById("message").innerText =
+                data.message;
+
+            document.getElementById("status").innerText =
+                "TRAINING";
+
+            setTimeout(checkStatus, 2000);
+
+        }
+
+
+        else if (data.status === "completed") {
+
+            document.getElementById("loader").style.display =
+                "none";
+
+            document.getElementById("progress").style.display =
+                "none";
+
+            document.getElementById("icon").innerText =
+                "✓";
+
+            document.getElementById("title").innerText =
+                "Training Complete!";
+
+            document.getElementById("message").innerText =
+                "Your Network Security model has been successfully trained and saved.";
+
+            document.getElementById("status").innerText =
+                "COMPLETED";
+
+            document.getElementById("status").className =
+                "status success";
+
+            document.getElementById("action").innerHTML = `
+                <button onclick="window.location.href='/predict'">
+                    Go to Prediction →
+                </button>
+            `;
+
+        }
+
+
+        else if (data.status === "failed") {
+
+            document.getElementById("loader").style.display =
+                "none";
+
+            document.getElementById("progress").style.display =
+                "none";
+
+            document.getElementById("icon").innerText =
+                "⚠";
+
+            document.getElementById("title").innerText =
+                "Training Failed";
+
+            document.getElementById("message").innerText =
+                "Something went wrong while training the model. Check the application logs for details.";
+
+            document.getElementById("status").innerText =
+                "FAILED";
+
+            document.getElementById("status").className =
+                "status error";
+
+        }
+
+    }
+
+    catch (error) {
+
+        console.error(error);
+
+        setTimeout(checkStatus, 3000);
+
+    }
+
+}
+
+
+checkStatus();
+
+</script>
+
+</body>
+
+</html>

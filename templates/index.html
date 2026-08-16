@@ -1,0 +1,1235 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Network Security ML</title>
+
+
+    <style>
+
+        /* =================================================
+           GLOBAL
+        ================================================= */
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+
+        body {
+
+            font-family:
+                Inter,
+                system-ui,
+                -apple-system,
+                BlinkMacSystemFont,
+                "Segoe UI",
+                sans-serif;
+
+            background: #020617;
+
+            color: #f8fafc;
+
+            line-height: 1.6;
+
+            transition:
+                background 0.3s ease,
+                color 0.3s ease;
+        }
+
+
+        .container {
+
+            width: 90%;
+
+            max-width: 1150px;
+
+            margin: auto;
+        }
+
+
+        /* =================================================
+           NAVBAR
+        ================================================= */
+
+        nav {
+
+            height: 80px;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: space-between;
+        }
+
+
+        .logo {
+
+            font-size: 21px;
+
+            font-weight: 800;
+
+            letter-spacing: -0.5px;
+        }
+
+
+        .logo span {
+
+            color: #60a5fa;
+        }
+
+
+        .theme-toggle {
+
+            border: 1px solid #334155;
+
+            background: #0f172a;
+
+            color: #f8fafc;
+
+            width: 44px;
+
+            height: 44px;
+
+            border-radius: 12px;
+
+            font-size: 18px;
+
+            cursor: pointer;
+
+            transition: 0.25s ease;
+        }
+
+
+        .theme-toggle:hover {
+
+            transform: translateY(-2px);
+
+            border-color: #60a5fa;
+        }
+
+
+        /* =================================================
+           HERO
+        ================================================= */
+
+        .hero {
+
+            min-height: 650px;
+
+            display: flex;
+
+            align-items: center;
+
+            position: relative;
+
+            overflow: hidden;
+        }
+
+
+        .hero::before {
+
+            content: "";
+
+            position: absolute;
+
+            width: 500px;
+
+            height: 500px;
+
+            background: #2563eb;
+
+            opacity: 0.12;
+
+            filter: blur(120px);
+
+            top: 50px;
+
+            left: -150px;
+
+            border-radius: 50%;
+        }
+
+
+        .hero-content {
+
+            max-width: 800px;
+
+            position: relative;
+
+            z-index: 1;
+        }
+
+
+        .badge {
+
+            display: inline-block;
+
+            padding: 7px 14px;
+
+            border-radius: 999px;
+
+            background:
+                rgba(34, 197, 94, 0.10);
+
+            border:
+                1px solid rgba(34, 197, 94, 0.25);
+
+            color: #86efac;
+
+            font-size: 13px;
+
+            font-weight: 700;
+
+            margin-bottom: 25px;
+        }
+
+
+        h1 {
+
+            font-size:
+                clamp(48px, 8vw, 88px);
+
+            line-height: 0.98;
+
+            letter-spacing: -4px;
+
+            margin-bottom: 25px;
+        }
+
+
+        .gradient {
+
+            background:
+                linear-gradient(
+                    90deg,
+                    #60a5fa,
+                    #a78bfa,
+                    #22d3ee
+                );
+
+            -webkit-background-clip: text;
+
+            -webkit-text-fill-color: transparent;
+        }
+
+
+        .hero-description {
+
+            color: #94a3b8;
+
+            font-size: 19px;
+
+            max-width: 700px;
+
+            margin-bottom: 35px;
+        }
+
+
+        .primary-button {
+
+            display: inline-block;
+
+            padding: 15px 24px;
+
+            border-radius: 13px;
+
+            text-decoration: none;
+
+            color: white;
+
+            font-weight: 700;
+
+            background:
+                linear-gradient(
+                    90deg,
+                    #2563eb,
+                    #7c3aed
+                );
+
+            box-shadow:
+                0 12px 35px
+                rgba(37, 99, 235, 0.25);
+
+            transition: 0.25s ease;
+        }
+
+
+        .primary-button:hover {
+
+            transform: translateY(-3px);
+
+            box-shadow:
+                0 18px 40px
+                rgba(124, 58, 237, 0.35);
+        }
+
+
+        /* =================================================
+           SECTIONS
+        ================================================= */
+
+        section {
+
+            padding: 90px 0;
+        }
+
+
+        .section-label {
+
+            color: #60a5fa;
+
+            font-size: 13px;
+
+            font-weight: 800;
+
+            text-transform: uppercase;
+
+            letter-spacing: 2px;
+
+            margin-bottom: 10px;
+        }
+
+
+        h2 {
+
+            font-size: 38px;
+
+            letter-spacing: -1.5px;
+
+            margin-bottom: 15px;
+        }
+
+
+        .section-description {
+
+            color: #94a3b8;
+
+            max-width: 700px;
+
+            margin-bottom: 40px;
+        }
+
+
+        /* =================================================
+           CARDS
+        ================================================= */
+
+        .grid {
+
+            display: grid;
+
+            grid-template-columns:
+                repeat(3, 1fr);
+
+            gap: 18px;
+        }
+
+
+        .card {
+
+            padding: 25px;
+
+            background: #0f172a;
+
+            border: 1px solid #1e293b;
+
+            border-radius: 20px;
+
+            transition: 0.25s ease;
+        }
+
+
+        .card:hover {
+
+            transform: translateY(-5px);
+
+            border-color: #334155;
+        }
+
+
+        .icon {
+
+            font-size: 30px;
+
+            margin-bottom: 15px;
+        }
+
+
+        .card h3 {
+
+            margin-bottom: 8px;
+
+            font-size: 18px;
+        }
+
+
+        .card p {
+
+            color: #94a3b8;
+
+            font-size: 14px;
+        }
+
+
+        /* =================================================
+           ROADMAP
+        ================================================= */
+
+        .roadmap {
+
+            border-left:
+                2px solid #1e293b;
+
+            padding-left: 30px;
+
+            max-width: 800px;
+        }
+
+
+        .roadmap-item {
+
+            position: relative;
+
+            padding: 0 0 35px;
+        }
+
+
+        .roadmap-item::before {
+
+            content: "";
+
+            position: absolute;
+
+            left: -39px;
+
+            top: 5px;
+
+            width: 14px;
+
+            height: 14px;
+
+            border-radius: 50%;
+
+            background: #334155;
+
+            border: 3px solid #020617;
+        }
+
+
+        .roadmap-item.completed::before {
+
+            background: #22c55e;
+        }
+
+
+        .status {
+
+            display: inline-block;
+
+            font-size: 11px;
+
+            font-weight: 800;
+
+            padding: 4px 9px;
+
+            border-radius: 999px;
+
+            margin-bottom: 7px;
+
+            background: #1e293b;
+
+            color: #94a3b8;
+        }
+
+
+        .completed .status {
+
+            color: #86efac;
+
+            background:
+                rgba(34, 197, 94, 0.1);
+        }
+
+
+        .roadmap-item h3 {
+
+            margin-bottom: 5px;
+        }
+
+
+        .roadmap-item p {
+
+            color: #94a3b8;
+
+            font-size: 14px;
+        }
+
+
+        /* =================================================
+           CTA
+        ================================================= */
+
+        .cta {
+
+            text-align: center;
+
+            padding: 70px 30px;
+
+            border-radius: 28px;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    rgba(37, 99, 235, 0.15),
+                    rgba(124, 58, 237, 0.15)
+                );
+
+            border: 1px solid #1e293b;
+        }
+
+
+        .cta p {
+
+            color: #94a3b8;
+
+            max-width: 600px;
+
+            margin: 0 auto 25px;
+        }
+
+
+        /* =================================================
+           FOOTER
+        ================================================= */
+
+        footer {
+
+            padding: 40px 0;
+
+            text-align: center;
+
+            color: #64748b;
+
+            font-size: 13px;
+        }
+
+
+        /* =================================================
+           LIGHT MODE
+        ================================================= */
+
+        body.light {
+
+            background: #f8fafc;
+
+            color: #0f172a;
+        }
+
+
+        body.light .theme-toggle {
+
+            background: #ffffff;
+
+            color: #0f172a;
+
+            border-color: #cbd5e1;
+        }
+
+
+        body.light .hero-description,
+        body.light .section-description {
+
+            color: #475569;
+        }
+
+
+        body.light .card {
+
+            background: #ffffff;
+
+            border-color: #e2e8f0;
+
+            box-shadow:
+                0 10px 30px
+                rgba(15, 23, 42, 0.05);
+        }
+
+
+        body.light .card:hover {
+
+            border-color: #cbd5e1;
+        }
+
+
+        body.light .card p {
+
+            color: #64748b;
+        }
+
+
+        body.light .roadmap {
+
+            border-color: #cbd5e1;
+        }
+
+
+        body.light
+        .roadmap-item::before {
+
+            border-color: #f8fafc;
+
+            background: #94a3b8;
+        }
+
+
+        body.light
+        .roadmap-item p {
+
+            color: #64748b;
+        }
+
+
+        body.light .status {
+
+            background: #e2e8f0;
+
+            color: #475569;
+        }
+
+
+        body.light .cta {
+
+            background:
+                linear-gradient(
+                    135deg,
+                    rgba(37, 99, 235, 0.08),
+                    rgba(124, 58, 237, 0.08)
+                );
+
+            border-color: #e2e8f0;
+        }
+
+
+        body.light .cta p {
+
+            color: #64748b;
+        }
+
+
+        body.light footer {
+
+            color: #64748b;
+        }
+
+
+        /* =================================================
+           RESPONSIVE
+        ================================================= */
+
+        @media (max-width: 800px) {
+
+            .grid {
+
+                grid-template-columns: 1fr;
+            }
+
+
+            h1 {
+
+                letter-spacing: -2px;
+            }
+
+
+            .hero {
+
+                min-height: 550px;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+    <div class="container">
+
+
+        <!-- NAVBAR -->
+
+        <nav>
+
+            <div class="logo">
+
+                🛡️ Network<span>Security</span>
+
+            </div>
+
+
+            <button
+                id="theme-toggle"
+                class="theme-toggle"
+                aria-label="Toggle theme"
+            >
+
+                🌙
+
+            </button>
+
+        </nav>
+
+
+        <!-- HERO -->
+
+        <section class="hero">
+
+            <div class="hero-content">
+
+
+                <div class="badge">
+
+                    ● MACHINE LEARNING SECURITY SYSTEM
+
+                </div>
+
+
+                <h1>
+
+                    Detect threats.
+
+                    <br>
+
+                    <span class="gradient">
+
+                        Protect networks.
+
+                    </span>
+
+                </h1>
+
+
+                <p class="hero-description">
+
+                    An end-to-end machine learning system
+                    designed to analyze network traffic
+                    and identify potentially malicious
+                    activity.
+
+                    Built while exploring Machine Learning
+                    Engineering and MLOps.
+
+                </p>
+
+
+                <a
+                    href="/predict"
+                    class="primary-button"
+                >
+
+                    Analyze Network Traffic →
+
+                </a>
+
+            </div>
+
+        </section>
+
+
+        <!-- PROJECT -->
+
+        <section>
+
+            <div class="section-label">
+
+                The Project
+
+            </div>
+
+
+            <h2>
+
+                From raw data to predictions.
+
+            </h2>
+
+
+            <p class="section-description">
+
+                This project goes beyond training a
+                machine learning model.
+
+                It implements an end-to-end workflow
+                covering data processing, validation,
+                transformation, model training,
+                experiment tracking and inference.
+
+            </p>
+
+
+            <div class="grid">
+
+
+                <div class="card">
+
+                    <div class="icon">📥</div>
+
+                    <h3>
+                        Data Pipeline
+                    </h3>
+
+                    <p>
+                        Automated data ingestion,
+                        validation and transformation
+                        before model training.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <div class="icon">🤖</div>
+
+                    <h3>
+                        ML Detection
+                    </h3>
+
+                    <p>
+                        Multiple classification algorithms
+                        are trained and evaluated to identify
+                        the strongest model.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <div class="icon">🧪</div>
+
+                    <h3>
+                        Experiment Tracking
+                    </h3>
+
+                    <p>
+                        MLflow and DagsHub track
+                        experiments, metrics and
+                        model artifacts.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <div class="icon">📊</div>
+
+                    <h3>
+                        Batch Prediction
+                    </h3>
+
+                    <p>
+                        Upload network traffic data
+                        and generate predictions for
+                        multiple records.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <div class="icon">🐳</div>
+
+                    <h3>
+                        Containerization
+                    </h3>
+
+                    <p>
+                        The application can be packaged
+                        and run consistently using Docker.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <div class="icon">⚙️</div>
+
+                    <h3>
+                        MLOps Ready
+                    </h3>
+
+                    <p>
+                        Designed to evolve toward
+                        automated deployment, monitoring
+                        and retraining.
+                    </p>
+
+                </div>
+
+
+            </div>
+
+        </section>
+
+
+        <!-- ROADMAP -->
+
+        <section>
+
+
+            <div class="section-label">
+
+                Roadmap
+
+            </div>
+
+
+            <h2>
+
+                Where this project is going.
+
+            </h2>
+
+
+            <p class="section-description">
+
+                This is the first version of a larger
+                network security platform.
+
+                The architecture can continue evolving
+                as new ML and MLOps capabilities are added.
+
+            </p>
+
+
+            <div class="roadmap">
+
+
+                <div class="roadmap-item completed">
+
+                    <span class="status">
+                        COMPLETED
+                    </span>
+
+                    <h3>
+                        End-to-End ML Pipeline
+                    </h3>
+
+                    <p>
+                        Data ingestion, validation,
+                        transformation and model training.
+                    </p>
+
+                </div>
+
+
+                <div class="roadmap-item completed">
+
+                    <span class="status">
+                        COMPLETED
+                    </span>
+
+                    <h3>
+                        Experiment Tracking
+                    </h3>
+
+                    <p>
+                        MLflow and DagsHub integration
+                        for experiments and models.
+                    </p>
+
+                </div>
+
+
+                <div class="roadmap-item completed">
+
+                    <span class="status">
+                        CURRENT
+                    </span>
+
+                    <h3>
+                        Batch Network Prediction
+                    </h3>
+
+                    <p>
+                        Upload network traffic data
+                        and receive ML predictions.
+                    </p>
+
+                </div>
+
+
+                <div class="roadmap-item">
+
+                    <span class="status">
+                        PLANNED
+                    </span>
+
+                    <h3>
+                        Real-Time Detection
+                    </h3>
+
+                    <p>
+                        Analyze network traffic
+                        continuously instead of relying
+                        only on uploaded datasets.
+                    </p>
+
+                </div>
+
+
+                <div class="roadmap-item">
+
+                    <span class="status">
+                        PLANNED
+                    </span>
+
+                    <h3>
+                        Security Dashboard
+                    </h3>
+
+                    <p>
+                        Visualize attacks, traffic patterns,
+                        model confidence and historical
+                        predictions.
+                    </p>
+
+                </div>
+
+
+                <div class="roadmap-item">
+
+                    <span class="status">
+                        PLANNED
+                    </span>
+
+                    <h3>
+                        Automated Alerting
+                    </h3>
+
+                    <p>
+                        Generate alerts when suspicious
+                        network activity is detected.
+                    </p>
+
+                </div>
+
+
+                <div class="roadmap-item">
+
+                    <span class="status">
+                        PLANNED
+                    </span>
+
+                    <h3>
+                        Model Monitoring
+                    </h3>
+
+                    <p>
+                        Track model performance and detect
+                        changes in incoming network data.
+                    </p>
+
+                </div>
+
+
+                <div class="roadmap-item">
+
+                    <span class="status">
+                        FUTURE
+                    </span>
+
+                    <h3>
+                        Continuous Retraining
+                    </h3>
+
+                    <p>
+                        Automatically retrain models as
+                        new labeled network data becomes
+                        available.
+                    </p>
+
+                </div>
+
+
+                <div class="roadmap-item">
+
+                    <span class="status">
+                        FUTURE
+                    </span>
+
+                    <h3>
+                        Cloud Deployment
+                    </h3>
+
+                    <p>
+                        Deploy the system to cloud
+                        infrastructure and expose it
+                        through production APIs.
+                    </p>
+
+                </div>
+
+
+            </div>
+
+        </section>
+
+
+        <!-- CTA -->
+
+        <section>
+
+            <div class="cta">
+
+
+                <div class="section-label">
+
+                    Try the Model
+
+                </div>
+
+
+                <h2>
+
+                    Analyze network traffic.
+
+                </h2>
+
+
+                <p>
+
+                    Upload a compatible network traffic
+                    dataset and see what the trained
+                    model detects.
+
+                </p>
+
+
+                <a
+                    href="/predict"
+                    class="primary-button"
+                >
+
+                    Open Prediction Console →
+
+                </a>
+
+
+            </div>
+
+        </section>
+
+
+        <footer>
+
+            Network Security ML •
+            Built with Python, FastAPI & Machine Learning
+
+        </footer>
+
+
+    </div>
+
+
+    <!-- =================================================
+         THEME SCRIPT
+    ================================================= -->
+
+    <script>
+
+        const themeToggle =
+            document.getElementById(
+                "theme-toggle"
+            );
+
+
+        function updateThemeIcon() {
+
+            if (
+                document.body.classList.contains(
+                    "light"
+                )
+            ) {
+
+                themeToggle.textContent = "🌙";
+
+            } else {
+
+                themeToggle.textContent = "☀️";
+
+            }
+
+        }
+
+
+        const savedTheme =
+            localStorage.getItem("theme");
+
+
+        if (savedTheme === "light") {
+
+            document.body.classList.add("light");
+
+        }
+
+
+        updateThemeIcon();
+
+
+        themeToggle.addEventListener(
+            "click",
+            () => {
+
+                document.body.classList.toggle(
+                    "light"
+                );
+
+
+                const theme =
+                    document.body.classList.contains(
+                        "light"
+                    )
+                        ? "light"
+                        : "dark";
+
+
+                localStorage.setItem(
+                    "theme",
+                    theme
+                );
+
+
+                updateThemeIcon();
+
+            }
+        );
+
+    </script>
+
+</body>
+
+</html>

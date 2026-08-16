@@ -1,0 +1,633 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Prediction Results</title>
+
+
+    <style>
+
+        * {
+
+            box-sizing: border-box;
+
+            margin: 0;
+
+            padding: 0;
+
+        }
+
+
+        body {
+
+            font-family:
+                Inter,
+                system-ui,
+                sans-serif;
+
+            background: #020617;
+
+            color: #f8fafc;
+
+            min-height: 100vh;
+
+            transition:
+                background 0.3s ease,
+                color 0.3s ease;
+        }
+
+
+        .container {
+
+            width: 92%;
+
+            max-width: 1250px;
+
+            margin: auto;
+
+            padding: 35px 0;
+        }
+
+
+        .topbar {
+
+            display: flex;
+
+            justify-content: space-between;
+
+            align-items: center;
+
+            margin-bottom: 35px;
+        }
+
+
+        .back {
+
+            color: #60a5fa;
+
+            text-decoration: none;
+
+            font-size: 14px;
+        }
+
+
+        .theme-toggle {
+
+            border: 1px solid #334155;
+
+            background: #0f172a;
+
+            color: white;
+
+            width: 42px;
+
+            height: 42px;
+
+            border-radius: 11px;
+
+            cursor: pointer;
+
+            font-size: 17px;
+        }
+
+
+        .badge {
+
+            display: inline-block;
+
+            padding: 6px 12px;
+
+            border-radius: 999px;
+
+            background:
+                rgba(34, 197, 94, 0.1);
+
+            color: #86efac;
+
+            font-size: 11px;
+
+            font-weight: 800;
+
+            margin-bottom: 15px;
+        }
+
+
+        h1 {
+
+            font-size: 45px;
+
+            letter-spacing: -2px;
+
+            margin-bottom: 8px;
+        }
+
+
+        .subtitle {
+
+            color: #94a3b8;
+
+            margin-bottom: 35px;
+        }
+
+
+        /* STATS */
+
+        .stats {
+
+            display: grid;
+
+            grid-template-columns:
+                repeat(3, 1fr);
+
+            gap: 18px;
+
+            margin-bottom: 30px;
+        }
+
+
+        .stat-card {
+
+            background: #0f172a;
+
+            border: 1px solid #1e293b;
+
+            border-radius: 18px;
+
+            padding: 25px;
+        }
+
+
+        .stat-label {
+
+            color: #94a3b8;
+
+            font-size: 13px;
+
+            margin-bottom: 8px;
+        }
+
+
+        .stat-value {
+
+            font-size: 34px;
+
+            font-weight: 800;
+        }
+
+
+        .normal {
+
+            color: #4ade80;
+        }
+
+
+        .attack {
+
+            color: #f87171;
+        }
+
+
+        /* TABLE */
+
+        .table-container {
+
+            background: #0f172a;
+
+            border: 1px solid #1e293b;
+
+            border-radius: 20px;
+
+            overflow: auto;
+
+            padding: 20px;
+        }
+
+
+        .table-header {
+
+            display: flex;
+
+            justify-content: space-between;
+
+            align-items: center;
+
+            margin-bottom: 18px;
+        }
+
+
+        .table-header h2 {
+
+            font-size: 20px;
+        }
+
+
+        .filename {
+
+            color: #64748b;
+
+            font-size: 13px;
+        }
+
+
+        .prediction-table {
+
+            width: 100%;
+
+            border-collapse: collapse;
+
+            font-size: 12px;
+        }
+
+
+        .prediction-table th {
+
+            background: #1e293b;
+
+            color: #cbd5e1;
+
+            padding: 11px;
+
+            text-align: left;
+
+            white-space: nowrap;
+        }
+
+
+        .prediction-table td {
+
+            padding: 10px;
+
+            border-bottom:
+                1px solid #1e293b;
+
+            white-space: nowrap;
+
+            color: #cbd5e1;
+        }
+
+
+        .prediction-table tr:hover td {
+
+            background: #111827;
+        }
+
+
+        .new-analysis {
+
+            display: inline-block;
+
+            margin-top: 25px;
+
+            padding: 13px 20px;
+
+            border-radius: 12px;
+
+            color: white;
+
+            text-decoration: none;
+
+            font-weight: 700;
+
+            background:
+                linear-gradient(
+                    90deg,
+                    #2563eb,
+                    #7c3aed
+                );
+        }
+
+
+        /* LIGHT */
+
+        body.light {
+
+            background: #f8fafc;
+
+            color: #0f172a;
+        }
+
+
+        body.light .theme-toggle {
+
+            background: white;
+
+            color: #0f172a;
+
+            border-color: #cbd5e1;
+        }
+
+
+        body.light .subtitle {
+
+            color: #475569;
+        }
+
+
+        body.light .stat-card,
+        body.light .table-container {
+
+            background: white;
+
+            border-color: #e2e8f0;
+
+            box-shadow:
+                0 10px 30px
+                rgba(15, 23, 42, 0.05);
+        }
+
+
+        body.light .stat-label {
+
+            color: #64748b;
+        }
+
+
+        body.light .prediction-table th {
+
+            background: #e2e8f0;
+
+            color: #334155;
+        }
+
+
+        body.light .prediction-table td {
+
+            color: #475569;
+
+            border-color: #e2e8f0;
+        }
+
+
+        body.light
+        .prediction-table tr:hover td {
+
+            background: #f8fafc;
+        }
+
+
+        /* MOBILE */
+
+        @media (max-width: 800px) {
+
+            .stats {
+
+                grid-template-columns: 1fr;
+
+            }
+
+
+            h1 {
+
+                font-size: 36px;
+
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+    <div class="container">
+
+
+        <div class="topbar">
+
+
+            <a
+                href="/"
+                class="back"
+            >
+
+                ← Back to home
+
+            </a>
+
+
+            <button
+                id="theme-toggle"
+                class="theme-toggle"
+            >
+
+                🌙
+
+            </button>
+
+
+        </div>
+
+
+        <div class="badge">
+
+            ● ANALYSIS COMPLETE
+
+        </div>
+
+
+        <h1>
+
+            Prediction Results
+
+        </h1>
+
+
+        <p class="subtitle">
+
+            Network traffic analysis completed
+            successfully.
+
+        </p>
+
+
+        <!-- STATS -->
+
+        <div class="stats">
+
+
+            <div class="stat-card">
+
+                <div class="stat-label">
+
+                    TOTAL RECORDS
+
+                </div>
+
+
+                <div class="stat-value">
+
+                    {{ total_predictions }}
+
+                </div>
+
+            </div>
+
+
+            <div class="stat-card">
+
+                <div class="stat-label">
+
+                    NORMAL TRAFFIC
+
+                </div>
+
+
+                <div class="stat-value normal">
+
+                    {{ normal_count }}
+
+                </div>
+
+            </div>
+
+
+            <div class="stat-card">
+
+                <div class="stat-label">
+
+                    POTENTIAL ATTACKS
+
+                </div>
+
+
+                <div class="stat-value attack">
+
+                    {{ attack_count }}
+
+                </div>
+
+            </div>
+
+
+        </div>
+
+
+        <!-- TABLE -->
+
+        <div class="table-container">
+
+
+            <div class="table-header">
+
+
+                <h2>
+
+                    Prediction Data
+
+                </h2>
+
+
+                <span class="filename">
+
+                    {{ filename }}
+
+                </span>
+
+
+            </div>
+
+
+            {{ table | safe }}
+
+
+        </div>
+
+
+        <a
+            href="/predict"
+            class="new-analysis"
+        >
+
+            + New Analysis
+
+        </a>
+
+
+    </div>
+
+
+    <script>
+
+        const themeToggle =
+            document.getElementById(
+                "theme-toggle"
+            );
+
+
+        function updateThemeIcon() {
+
+            if (
+                document.body.classList.contains(
+                    "light"
+                )
+            ) {
+
+                themeToggle.textContent = "🌙";
+
+            } else {
+
+                themeToggle.textContent = "☀️";
+
+            }
+
+        }
+
+
+        if (
+            localStorage.getItem("theme")
+            === "light"
+        ) {
+
+            document.body.classList.add("light");
+
+        }
+
+
+        updateThemeIcon();
+
+
+        themeToggle.addEventListener(
+            "click",
+            () => {
+
+                document.body.classList.toggle(
+                    "light"
+                );
+
+
+                const theme =
+                    document.body.classList.contains(
+                        "light"
+                    )
+                        ? "light"
+                        : "dark";
+
+
+                localStorage.setItem(
+                    "theme",
+                    theme
+                );
+
+
+                updateThemeIcon();
+
+            }
+        );
+
+    </script>
+
+</body>
+
+</html>
